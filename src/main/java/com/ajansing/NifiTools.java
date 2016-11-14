@@ -80,8 +80,8 @@ public class NifiTools {
 		});
 	}
 	
-	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, final JsonObject originalJson) {
-		return writeFlowFile(flowFile, session, new Gson().toJson(originalJson));
+	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonElement jsonElement) {
+		return writeFlowFile(flowFile, session, jsonElement.getAsString());
 	}
 
 }
