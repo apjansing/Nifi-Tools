@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class NifiTools {
+	Gson gson = new Gson();
 
 	public NifiTools() {
 	}
@@ -48,7 +49,6 @@ public class NifiTools {
 		final StringBuilder builder = new StringBuilder();
 		session.read(flowFile, new InputStreamCallback() {
 			@SuppressWarnings("deprecation")
-			@Override
 			public void process(InputStream in) throws IOException {
 				builder.append(IOUtils.toString(in));
 			}
@@ -73,7 +73,6 @@ public class NifiTools {
 	
 	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, final String string) {
 		return session.write(flowFile, new OutputStreamCallback() {
-			@Override
 			public void process(OutputStream out) throws IOException {
 				out.write(string.getBytes());
 			}
@@ -81,7 +80,11 @@ public class NifiTools {
 	}
 	
 	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonElement jsonElement) {
-		return writeFlowFile(flowFile, session, jsonElement.getAsString());
+		return writeFlowFile(flowFile, session, gson.toJson(jsonElement));
+	}
+	
+	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonObject jsonElement) {
+		return writeFlowFile(flowFile, session, jsonElement.toString());
 	}
 
 }
