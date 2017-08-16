@@ -1,4 +1,4 @@
-package com.ajansing;
+package com.apjansing;
 
 import java.io.IOException;
 import java.io.InputStream;
