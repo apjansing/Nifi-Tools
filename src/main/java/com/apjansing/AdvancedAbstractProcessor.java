@@ -45,9 +45,9 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	}
 	
 	/**
-	 * @param flowFile
-	 * @param session
-	 * @return
+	 * @param flowFile to read from.
+	 * @param session 
+	 * @return a BufferedReader of the content.
 	 * @throws IOException
 	 */
 	public BufferedReader readAsBufferedReader( FlowFile flowFile, ProcessSession session ) throws IOException {
@@ -55,13 +55,15 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	}
 
 	/**
-	 * @param flowFile
-	 * @param session
-	 * @param cs
-	 * @return
+	 * @param flowFile to read from.
+	 * @param session 
+	 * @param cs of the encoding. Default is UTF-8 if null.
+	 * @return a BufferedReader of the content.
 	 * @throws IOException
 	 */
 	public BufferedReader readAsBufferedReader( FlowFile flowFile, ProcessSession session, Charset cs ) throws IOException {
+		if(cs.equals(null))
+			return readAsBufferedReader(flowFile, session);
 		try( InputStream in = session.read( flowFile ) ){
 			return new BufferedReader( new InputStreamReader(in, cs ) );
 		} catch ( IOException e ) {
