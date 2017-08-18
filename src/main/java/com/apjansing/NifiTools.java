@@ -22,69 +22,69 @@ public class NifiTools {
 
 	public NifiTools() {
 	}
-	
+
 	public JsonElement readAsJsonElement(FlowFile flowFile, ProcessSession session) {
-		return new JsonParser().parse(readAsString(flowFile, session).replaceAll("\n", "").replaceAll("\t", ""));
+		return new JsonParser()
+				.parse( readAsString( flowFile, session ).replaceAll( "\n", "" ).replaceAll( "\t", "" ) );
 	}
-	
-	public JsonObject readAsJson(FlowFile flowFile, ProcessSession session){
-		return readAsJsonElement(flowFile, session).getAsJsonObject();
+
+	public JsonObject readAsJson(FlowFile flowFile, ProcessSession session) {
+		return readAsJsonElement( flowFile, session ).getAsJsonObject();
 	}
-	
-	public JsonArray readAsJsonArray(FlowFile flowFile, ProcessSession session){
-		return confirmJsonArray(readAsJsonElement(flowFile, session));
+
+	public JsonArray readAsJsonArray(FlowFile flowFile, ProcessSession session) {
+		return confirmJsonArray( readAsJsonElement( flowFile, session ) );
 	}
-		
+
 	private JsonArray confirmJsonArray(JsonElement E) {
-		return E.isJsonArray() ? E.getAsJsonArray() : JsonElementToArray(E);
+		return E.isJsonArray() ? E.getAsJsonArray() : JsonElementToArray( E );
 	}
 
 	private JsonArray JsonElementToArray(JsonElement E) {
 		JsonArray ja = new JsonArray();
-		ja.add(E);
+		ja.add( E );
 		return ja;
 	}
 
-	public String readAsString(FlowFile flowFile, ProcessSession session){
+	public String readAsString(FlowFile flowFile, ProcessSession session) {
 		final StringBuilder builder = new StringBuilder();
-		session.read(flowFile, new InputStreamCallback() {
+		session.read( flowFile, new InputStreamCallback() {
 			@SuppressWarnings("deprecation")
 			public void process(InputStream in) throws IOException {
-				builder.append(IOUtils.toString(in));
+				builder.append( IOUtils.toString( in ) );
 			}
-		});
+		} );
 		return builder.toString();
 	}
-	
-	public <T> T[] readAsIntArray(FlowFile flowFile, ProcessSession session,  String deliminator, Class<T>[] t){
-		return toArray(readAsString(flowFile, session), deliminator, t);
+
+	public <T> T [] readAsIntArray(FlowFile flowFile, ProcessSession session, String deliminator, Class <T> [] t) {
+		return toArray( readAsString( flowFile, session ), deliminator, t );
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private <T> T[] toArray(String string, String deliminator, Class<T>[] clazz){
-		String[] S = string.split(deliminator);
-		T[] res = (T[]) Array.newInstance(clazz.getClass(), S.length);
-		for(int i = 0; i < S.length; i++){
-			res[i] = (T)S[i];
+	private <T> T [] toArray(String string, String deliminator, Class <T> [] clazz) {
+		String [] S = string.split( deliminator );
+		T [] res = ( T [] ) Array.newInstance( clazz.getClass(), S.length );
+		for ( int i = 0; i < S.length; i++ ) {
+			res [i] = ( T ) S [i];
 		}
 		return res;
 	}
 
-	
 	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, final String string) {
-		return session.write(flowFile, new OutputStreamCallback() {
+		return session.write( flowFile, new OutputStreamCallback() {
 			public void process(OutputStream out) throws IOException {
-				out.write(string.getBytes());
+				out.write( string.getBytes() );
 			}
-		});
+		} );
 	}
-	
+
 	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonElement jsonElement) {
-		return writeFlowFile(flowFile, session, gson.toJson(jsonElement));
+		return writeFlowFile( flowFile, session, gson.toJson( jsonElement ) );
 	}
-	
+
 	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonObject jsonElement) {
-		return writeFlowFile(flowFile, session, jsonElement.toString());
+		return writeFlowFile( flowFile, session, jsonElement.toString() );
 	}
 
 }

@@ -19,135 +19,148 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * @author apjansing
+ * @author apjansing Advanced AbstractProcessor with some lightweight methods to
+ *         shorten your code.
  *
  */
 public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
-	
-	final static Logger logger = LoggerFactory.getLogger( AdvancedAbstractProcessor.class );
-	final static Gson gson = new Gson();
-	
+
+	final static Logger	logger	= LoggerFactory.getLogger( AdvancedAbstractProcessor.class );
+	final static Gson	gson	= new Gson();
+
 	/**
-	 * @param flowFile to read from.
-	 * @param session 
-	 * @param charsetName of the encoding. Default is UTF-8 if null.
+	 * @param flowFile
+	 *            to read from.
+	 * @param session
+	 * @param charsetName
+	 *            of the encoding. Default is UTF-8 if null.
 	 * @return a BufferedReader of the content.
 	 * @throws IOException
 	 */
-	public BufferedReader readAsBufferedReader( FlowFile flowFile, ProcessSession session, String charsetName ) throws IOException {
-		if(charsetName.equals(null)) 
-			return readAsBufferedReader(flowFile, session);
-		try( InputStream in = session.read( flowFile ) ){
-			return new BufferedReader( new InputStreamReader(in, charsetName) );
+	public BufferedReader readAsBufferedReader(FlowFile flowFile, ProcessSession session, String charsetName)
+			throws IOException {
+		if ( charsetName.equals( null ) )
+			return readAsBufferedReader( flowFile, session );
+		try ( InputStream in = session.read( flowFile ) ) {
+			return new BufferedReader( new InputStreamReader( in, charsetName ) );
 		} catch ( IOException e ) {
-			throw new IOException("IOException occurred while trying to make BufferedReader from FlowFile.", e);
+			throw new IOException( "IOException occurred while trying to make BufferedReader from FlowFile.", e );
 		}
-	}
-	
-	/**
-	 * @param flowFile to read from.
-	 * @param session 
-	 * @return a BufferedReader of the content.
-	 * @throws IOException
-	 */
-	public BufferedReader readAsBufferedReader( FlowFile flowFile, ProcessSession session ) throws IOException {
-		return readAsBufferedReader( flowFile, session, "UTF-8");
 	}
 
 	/**
-	 * @param flowFile to read from.
-	 * @param session 
-	 * @param cs of the encoding. Default is UTF-8 if null.
+	 * @param flowFile
+	 *            to read from.
+	 * @param session
 	 * @return a BufferedReader of the content.
 	 * @throws IOException
 	 */
-	public BufferedReader readAsBufferedReader( FlowFile flowFile, ProcessSession session, Charset cs ) throws IOException {
-		if(cs.equals(null))
-			return readAsBufferedReader(flowFile, session);
-		try( InputStream in = session.read( flowFile ) ){
-			return new BufferedReader( new InputStreamReader(in, cs ) );
+	public BufferedReader readAsBufferedReader(FlowFile flowFile, ProcessSession session) throws IOException {
+		return readAsBufferedReader( flowFile, session, "UTF-8" );
+	}
+
+	/**
+	 * @param flowFile
+	 *            to read from.
+	 * @param session
+	 * @param cs
+	 *            of the encoding. Default is UTF-8 if null.
+	 * @return a BufferedReader of the content.
+	 * @throws IOException
+	 */
+	public BufferedReader readAsBufferedReader(FlowFile flowFile, ProcessSession session, Charset cs)
+			throws IOException {
+		if ( cs.equals( null ) )
+			return readAsBufferedReader( flowFile, session );
+		try ( InputStream in = session.read( flowFile ) ) {
+			return new BufferedReader( new InputStreamReader( in, cs ) );
 		} catch ( IOException e ) {
-			throw new IOException("IOException occurred while trying to make BufferedReader from FlowFile.", e);
+			throw new IOException( "IOException occurred while trying to make BufferedReader from FlowFile.", e );
 		}
 	}
-	
+
 	/**
 	 * @param flowFile
+	 *            to write to.
 	 * @param session
 	 * @param jsonElement
+	 *            what you want written to the flowFile's content.
 	 * @return
 	 */
-	public FlowFile writeFlowFile( FlowFile flowFile, ProcessSession session, JsonElement jsonElement ) {
+	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonElement jsonElement) {
 		return writeFlowFile( flowFile, session, gson.toJson( jsonElement ) );
 	}
-	
+
 	/**
 	 * @param flowFile
+	 *            to write to.
 	 * @param session
-	 * @param jsonElement
+	 * @param jsonEObject
+	 *            what you want written to the flowFile's content.
 	 * @return
 	 */
-	public FlowFile writeFlowFile( FlowFile flowFile, ProcessSession session, JsonObject jsonElement ) {
-		return writeFlowFile( flowFile, session, jsonElement.toString() );
+	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonObject jsonEObject) {
+		return writeFlowFile( flowFile, session, jsonEObject.toString() );
 	}
-	
+
 	/**
 	 * @param flowFile
+	 *            to write to.
 	 * @param session
 	 * @param string
+	 *            to write to flowFile's content.
 	 * @return
 	 */
-	public FlowFile writeFlowFile( FlowFile flowFile, ProcessSession session, final String string ) {
-		return session.write( flowFile, ( out ) -> {
-				out.write( string.getBytes() );
-		});
+	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, final String string) {
+		return session.write( flowFile, (out) -> {
+			out.write( string.getBytes() );
+		} );
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public Logger getSlf4jLogger() {
 		return LoggerFactory.getLogger( this.getClass() );
 	}
-	
+
 	/**
 	 * @param context
 	 * @param propertyDescriptors
-	 * @return
+	 * @return true is all PropertyDescriptors are set, otherwise false.
 	 */
-	public boolean allPropertiesNotNull( ProcessContext context, PropertyDescriptor ... propertyDescriptors ) {
-		for( PropertyDescriptor propertyDescriptor : propertyDescriptors ) {
-			if( !propertyNotNull( context, propertyDescriptor ) ) {
+	public boolean allPropertiesNotNull(ProcessContext context, PropertyDescriptor... propertyDescriptors) {
+		for ( PropertyDescriptor propertyDescriptor : propertyDescriptors ) {
+			if ( !propertyNotNull( context, propertyDescriptor ) ) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * @param context
 	 * @param propertyDescriptors
+	 *            true is any of the PropertyDescriptors are set, otherwise false.
 	 * @return
 	 */
-	public boolean anyPropertyNotNull( ProcessContext context, PropertyDescriptor ... propertyDescriptors ) {
-		for( PropertyDescriptor propertyDescriptor : propertyDescriptors ) {
-			if( propertyNotNull( context, propertyDescriptor ) ) {
+	public boolean anyPropertyNotNull(ProcessContext context, PropertyDescriptor... propertyDescriptors) {
+		for ( PropertyDescriptor propertyDescriptor : propertyDescriptors ) {
+			if ( propertyNotNull( context, propertyDescriptor ) ) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	
+
 	/**
 	 * @param context
 	 * @param propertyDescriptor
+	 *            true is the PropertyDescriptor is set, otherwise false.
 	 * @return
 	 */
-	public boolean propertyNotNull( ProcessContext context, PropertyDescriptor propertyDescriptor ) {
+	public boolean propertyNotNull(ProcessContext context, PropertyDescriptor propertyDescriptor) {
 		return context.getProperty( propertyDescriptor ).isSet();
 	}
-	
-	
 
 }
