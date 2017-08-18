@@ -32,6 +32,7 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	 * @param flowFile
 	 *            to read from.
 	 * @param session
+	 *            ProcessSession of the Nifi istandce you're working in.
 	 * @param charsetName
 	 *            of the encoding. Default is UTF-8 if null.
 	 * @return a BufferedReader of the content.
@@ -52,6 +53,7 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	 * @param flowFile
 	 *            to read from.
 	 * @param session
+	 *            ProcessSession of the Nifi istandce you're working in.
 	 * @return a BufferedReader of the content.
 	 * @throws IOException
 	 */
@@ -63,6 +65,7 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	 * @param flowFile
 	 *            to read from.
 	 * @param session
+	 *            ProcessSession of the Nifi istandce you're working in.
 	 * @param cs
 	 *            of the encoding. Default is UTF-8 if null.
 	 * @return a BufferedReader of the content.
@@ -83,6 +86,7 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	 * @param flowFile
 	 *            to write to.
 	 * @param session
+	 *            ProcessSession of the Nifi istandce you're working in.
 	 * @param jsonElement
 	 *            what you want written to the flowFile's content.
 	 * @return
@@ -95,18 +99,20 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	 * @param flowFile
 	 *            to write to.
 	 * @param session
-	 * @param jsonEObject
+	 *            ProcessSession of the Nifi istandce you're working in.
+	 * @param jsonObject
 	 *            what you want written to the flowFile's content.
 	 * @return
 	 */
-	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonObject jsonEObject) {
-		return writeFlowFile( flowFile, session, jsonEObject.toString() );
+	public FlowFile writeFlowFile(FlowFile flowFile, ProcessSession session, JsonObject jsonObject) {
+		return writeFlowFile( flowFile, session, jsonObject.toString() );
 	}
 
 	/**
 	 * @param flowFile
 	 *            to write to.
 	 * @param session
+	 *            ProcessSession of the Nifi istandce you're working in.
 	 * @param string
 	 *            to write to flowFile's content.
 	 * @return
@@ -141,8 +147,7 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	/**
 	 * @param context
 	 * @param propertyDescriptors
-	 *            true is any of the PropertyDescriptors are set, otherwise false.
-	 * @return
+	 * @return true is any of the PropertyDescriptors are set, otherwise false.
 	 */
 	public boolean anyPropertyNotNull(ProcessContext context, PropertyDescriptor... propertyDescriptors) {
 		for ( PropertyDescriptor propertyDescriptor : propertyDescriptors ) {
@@ -156,8 +161,7 @@ public abstract class AdvancedAbstractProcessor extends AbstractProcessor {
 	/**
 	 * @param context
 	 * @param propertyDescriptor
-	 *            true is the PropertyDescriptor is set, otherwise false.
-	 * @return
+	 * @return true is the PropertyDescriptor is set, otherwise false.
 	 */
 	public boolean propertyNotNull(ProcessContext context, PropertyDescriptor propertyDescriptor) {
 		return context.getProperty( propertyDescriptor ).isSet();
